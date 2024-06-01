@@ -1,10 +1,12 @@
 public class ContaPJ extends Cliente {
-    public ContaPJ(String cpf, String nome, String email, String cnpj, double saldo) {
-        super(cpf, nome, email, cnpj, saldo);
+    
+    public ContaPJ(String cpf, String cnpj, String nome, String senha, String email, int tipoDeConta, double saldo) {
+        super(cpf, cnpj, nome, senha, email, tipoDeConta, saldo);
     }
-    //Método para validar CNPJ
+
+    // Método para validar CNPJ
     public boolean validarCNPJ(String cnpj) {
-        //lógica para validar o CNPJ
+        // Lógica para validar o CNPJ
         return cnpj.equals(getCnpj());
     }
 }

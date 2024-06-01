@@ -1,34 +1,52 @@
-
 public class Cliente extends Usuario {
-    //Atributo específico de Cliente
+    // Atributo específico de Cliente
     protected double saldo;
-    public Cliente(String cfp, String cnpj, String nome, String senha, String email, int tipoDeConta, double saldo) {
-        super(cfp, cnpj, nome, senha, email, tipoDeConta);
+
+    public Cliente(String cpf, String cnpj, String nome, String senha, String email, int tipoDeConta, double saldo) {
+        super(cpf, cnpj, nome, senha, email, tipoDeConta);
         this.saldo = saldo;
     }
-    //consultar saldo
-    public double saldo() {
+
+    // Consultar saldo
+    public double consultarSaldo() {
         return saldo;
     }
-    //extrato da conta
+
+    // Extrato da conta
     public void extrato() {
         // Lógica para exibir extrato da conta
     }
+
     public void excluirConta() {
         // Lógica para excluir a conta do cliente
     }
+
     public void depositar(double valor) {
-        // Lógica para depositar dinheiro na conta
+        saldo += valor;
+        System.out.println("Depósito realizado: " + valor);
     }
+
     public void transferir(double valor, String contaDestino) {
-        // Lógica para transferir dinheiro para outra conta
+        if (saldo >= valor) {
+            saldo -= valor;
+            // Lógica para transferir dinheiro para outra conta
+            System.out.println("Transferência realizada para a conta " + contaDestino + " no valor de " + valor);
+        } else {
+            System.out.println("Saldo insuficiente para transferência.");
+        }
     }
+
     public void sacar(double valor) {
-        // Lógica para sacar dinheiro da conta
+        if (saldo >= valor) {
+            saldo -= valor;
+            System.out.println("Saque realizado: " + valor);
+        } else {
+            System.out.println("Saldo insuficiente para saque.");
+        }
     }
+
     public void emprestimo(double valor) {
         // Lógica para solicitar empréstimo
     }
 }
-
 

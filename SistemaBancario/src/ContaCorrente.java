@@ -1,9 +1,10 @@
-
 public class ContaCorrente extends Cliente {
-    public ContaCorrente(String cpf, String nome, String email, String cnpj, double saldo) {
-        super(cpf, nome, email, cnpj, saldo);
+
+    public ContaCorrente(String cpf, String cnpj, String nome, String senha, String email, int tipoDeConta, double saldo) {
+        super(cpf, cnpj, nome, senha, email, tipoDeConta, saldo);
     }
-    //tarifa bancária
+
+    // Tarifa bancária
     public void cobrarTarifaBancaria(double valorTarifa) {
         if (saldo >= valorTarifa) {
             saldo -= valorTarifa;
@@ -13,5 +14,3 @@ public class ContaCorrente extends Cliente {
         }
     }
 }
-
-
