@@ -1,4 +1,4 @@
-package com.example;
+package com.example.Model;
 
 public class ContaPoupanca extends Cliente {
     private static final double taxaRendimento = 1.1; // Taxa de rendimento fixa

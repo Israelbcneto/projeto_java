@@ -1,4 +1,4 @@
-package com.example;
+package com.example.Model;
 
 public class Relatorios {
     public void gerarRelatorios(Administrador admin) {

@@ -1,5 +1,12 @@
 package com.example;
 
+import com.example.Model.Administrador;
+import com.example.Model.Cliente;
+import com.example.Model.ContaCorrente;
+import com.example.Model.ContaPJ;
+import com.example.Model.ContaPoupanca;
+import com.example.Model.Relatorios;
+
 public class Main {
     public static void main(String[] args) {
         // Criando um cliente
