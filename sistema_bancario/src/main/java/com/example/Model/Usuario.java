@@ -3,7 +3,7 @@ package com.example.Model;
 public class Usuario {
     private String cfp;
     private String cnpj;
-    private String nome;
+    protected String nome;
     private String senha;
     private String email;
     protected int tipoDeConta; // Identificar qual o tipo de conta

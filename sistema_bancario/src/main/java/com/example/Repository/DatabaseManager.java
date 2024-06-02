@@ -1,4 +1,5 @@
 package com.example.Repository;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -11,10 +12,10 @@ public class DatabaseManager {
 
     private Connection connection;
 
-    // Method to realize the connection with de MySQL database
+    // Method to realize the connection with the MySQL database
     public DatabaseManager(String url, String user, String password) throws SQLException {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
             connection = DriverManager.getConnection(url, user, password);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(DatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
@@ -22,7 +23,6 @@ public class DatabaseManager {
         }
     }
 
-    // Method to execute a query in the database and retunr the datas
     public ResultSet executeQuery(String query) throws SQLException {
         if (connection == null || connection.isClosed()) {
             throw new SQLException("Conexão com o banco de dados não está disponível");
@@ -31,7 +31,24 @@ public class DatabaseManager {
         return connection.createStatement().executeQuery(query);
     }
 
-    // Method to close the connection with the database after the actions on the DB be realised
+    public int executeUpdate(String query, Object... params) throws SQLException {
+        if (connection == null || connection.isClosed()) {
+            throw new SQLException("Conexão com o banco de dados não está disponível");
+        }
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            for (int i = 0; i < params.length; i++) {
+                preparedStatement.setObject(i + 1, params[i]);
+            }
+
+            return preparedStatement.executeUpdate();
+        }
+    }
+
+    public Connection getConnection() {
+        return connection;
+    }
+
     public void closeConnection() {
         try {
             if (connection != null && !connection.isClosed()) {
@@ -41,22 +58,4 @@ public class DatabaseManager {
             Logger.getLogger(DatabaseManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-    // Method to execute a datas update in the database
-    public int executeUpdate(String query, Object... params) throws SQLException {
-        if (connection == null || connection.isClosed()) {
-            throw new SQLException("Conexão com o banco de dados não está disponível");
-        }
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            // Substitui os marcadores de posição na consulta pelos parâmetros fornecidos
-            for (int i = 0; i < params.length; i++) {
-                preparedStatement.setObject(i + 1, params[i]);
-            }
-
-            // Executa a atualização e retorna o número de linhas afetadas
-            return preparedStatement.executeUpdate();
-        }
-    }
-
 }
