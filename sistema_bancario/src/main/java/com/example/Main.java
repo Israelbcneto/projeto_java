@@ -9,11 +9,12 @@ import com.example.Model.Relatorios;
 import com.example.Repository.QueryExecutions;
 import com.example.Repository.Datas;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
         Cliente cliente = null;
         ContaCorrente contaCorrente = null;
@@ -48,6 +49,8 @@ public class Main {
             System.out.println("0. Sair");
             int option = scanner.nextInt();
             scanner.nextLine();
+
+            clearConsole();
 
             switch (option) {
                 case 1:
@@ -159,6 +162,21 @@ public class Main {
                 default:
                     System.out.println("Opção inválida! Tente novamente.");
             }
+        }
+    }
+    public static void clearConsole() {
+        try {
+            final String os = System.getProperty("os.name");
+
+            if (os.contains("Windows")) {
+                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+            } else {
+                System.out.print("\033[H\033[2J");
+                System.out.flush();
+            }
+        } catch (final Exception e) {
+            // Handle any exceptions.
+            e.printStackTrace();
         }
     }
 }
