@@ -2,8 +2,9 @@ package com.example.Model;
 
 public class ContaCorrente extends Cliente {
 
-    public ContaCorrente(String cpf, String cnpj, String nome, String senha, String email, int tipoDeConta, double saldo) {
-        super(cpf, cnpj, nome, senha, email, tipoDeConta, saldo);
+    // Novo construtor que não exige CNPJ
+    public ContaCorrente(String cpf, String nome, String senha, String email, int tipoDeConta, double saldo) {
+        super(cpf, "", nome, senha, email, tipoDeConta, saldo); // Passando uma string vazia para CNPJ
     }
 
     // Tarifa bancária

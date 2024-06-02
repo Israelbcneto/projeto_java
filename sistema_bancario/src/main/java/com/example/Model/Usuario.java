@@ -6,7 +6,7 @@ public class Usuario {
     protected String nome;
     private String senha;
     private String email;
-    protected int tipoDeConta; // Identificar qual o tipo de conta
+    protected int tipoDeConta;
 
     public Usuario(String cfp, String cnpj, String nome, String senha, String email, int tipoDeConta) {
         this.cfp = cfp;

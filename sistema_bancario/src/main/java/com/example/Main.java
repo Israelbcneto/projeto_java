@@ -2,10 +2,6 @@ package com.example;
 
 import com.example.Model.Administrador;
 import com.example.Model.Cliente;
-import com.example.Model.ContaCorrente;
-import com.example.Model.ContaPJ;
-import com.example.Model.ContaPoupanca;
-import com.example.Model.Relatorios;
 import com.example.Repository.QueryExecutions;
 import com.example.Repository.Datas;
 
@@ -14,16 +10,12 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    private static QueryExecutions executor;
+
+    public static void main(String[] args) throws IOException, SQLException {
         Scanner scanner = new Scanner(System.in);
-        Cliente cliente = null;
-        ContaCorrente contaCorrente = null;
-        ContaPoupanca contaPoupanca = null;
-        ContaPJ contaPJ = null;
-        Administrador admin = null;
-        Relatorios relatorios = new Relatorios();
-        QueryExecutions executor = null;
-        
+        boolean continuar = true;
+
         try {
             executor = new QueryExecutions();
         } catch (SQLException e) {
@@ -31,139 +23,213 @@ public class Main {
             return;
         }
 
-        while (true) {
-            System.out.println("Bem-vindo ao sistema bancário!");
-            System.out.println("Selecione a opção:");
-            System.out.println("1. Criar Cliente");
-            System.out.println("2. Criar Conta Corrente");
-            System.out.println("3. Criar Conta Poupança");
-            System.out.println("4. Criar Conta PJ");
-            System.out.println("5. Login Administrador");
-            System.out.println("6. Realizar Saque");
-            System.out.println("7. Realizar Depósito");
-            System.out.println("8. Cobrar Tarifa Bancária");
-            System.out.println("9. Aplicar Rendimento (Conta Poupança)");
-            System.out.println("10. Validar CNPJ (Conta PJ)");
-            System.out.println("11. Gerar Relatórios");
-            System.out.println("12. Consultar Cliente");
-            System.out.println("0. Sair");
-            int option = scanner.nextInt();
+        while (continuar) {
+            System.out.println("\n--- Menu Principal ---");
+            System.out.println("1. Login");
+            System.out.println("2. Cadastro com CPF (Pessoa Física)");
+            System.out.println("3. Cadastro com CNPJ (Pessoa Jurídica)");
+            System.out.println("4. Login como Admin");
+            System.out.println("5. Sair");
+            System.out.print("Escolha uma opção: ");
+
+            int opcao = scanner.nextInt();
             scanner.nextLine();
 
             clearConsole();
 
-            switch (option) {
+            switch (opcao) {
                 case 1:
-                    System.out.println("Criando um cliente...");
-                    Datas novoCliente = new Datas("12312312310", "Klaudio", "ProfKlaudio@professor.com", 1, "123456", 0.0f);
-                    executor.insertCliente(novoCliente);
-                    System.out.println("Cliente criado com sucesso!");
+                    Cliente usuarioLogado = login(scanner);
+                    if (usuarioLogado != null) {
+                        menuFinanceiro(scanner, usuarioLogado);
+                    }
                     break;
                 case 2:
-                    System.out.println("Criando uma conta corrente...");
-                    contaCorrente = new ContaCorrente("12312312310", "01123123000101", "Klaudio", "123456", "ProfKlaudio@professor.com", 1, 10000.0);
-                    System.out.println("Conta Corrente criada com sucesso!");
+                    cadastroPessoaFisica(scanner);
                     break;
                 case 3:
-                    System.out.println("Criando uma conta poupança...");
-                    contaPoupanca = new ContaPoupanca("12312312310", "01123123000101", "Klaudio", "123456", "ProfKlaudio@professor.com", 1, 5000.0);
-                    System.out.println("Conta Poupança criada com sucesso!");
+                    cadastroPessoaJuridica(scanner);
                     break;
                 case 4:
-                    System.out.println("Criando uma conta PJ...");
-                    contaPJ = new ContaPJ("12312312310", "01123123000101", "Klaudio", "123456", "ProfKlaudio@professor.com", 1, 20000.0);
-                    System.out.println("Conta PJ criada com sucesso!");
+                    Administrador adm = loginAdmin(scanner);
+                    if (adm != null) {
+                        menuAdmin(scanner, adm);
+                    }
                     break;
                 case 5:
-                    System.out.println("Fazendo login como administrador...");
-                    admin = new Administrador("11122233344", "", "Admin", "admin123", "admin@admin.com", 2, 0.0);
-                    System.out.println("Login de administrador bem-sucedido!");
-                    break;
-                case 6:
-                    if (admin != null) {
-                        System.out.println("Digite o valor do saque:");
-                        double saque = scanner.nextDouble();
-                        scanner.nextLine();
-                        admin.adicionarSaque(saque);
-                        System.out.println("Saque realizado com sucesso!");
-                    } else {
-                        System.out.println("Por favor, faça login como administrador primeiro.");
-                    }
-                    break;
-                case 7:
-                    if (admin != null) {
-                        System.out.println("Digite o valor do depósito:");
-                        double deposito = scanner.nextDouble();
-                        scanner.nextLine();
-                        admin.adicionarDeposito(deposito);
-                        System.out.println("Depósito realizado com sucesso!");
-                    } else {
-                        System.out.println("Por favor, faça login como administrador primeiro.");
-                    }
-                    break;
-                case 8:
-                    if (contaCorrente != null) {
-                        System.out.println("Digite o valor da tarifa bancária:");
-                        double tarifa = scanner.nextDouble();
-                        scanner.nextLine();
-                        contaCorrente.cobrarTarifaBancaria(tarifa);
-                        System.out.println("Tarifa bancária cobrada com sucesso!");
-                    } else {
-                        System.out.println("Por favor, crie uma conta corrente primeiro.");
-                    }
-                    break;
-                case 9:
-                    if (contaPoupanca != null) {
-                        contaPoupanca.aplicarRendimento();
-                        System.out.println("Rendimento aplicado com sucesso!");
-                    } else {
-                        System.out.println("Por favor, crie uma conta poupança primeiro.");
-                    }
-                    break;
-                case 10:
-                    if (contaPJ != null) {
-                        System.out.println("Validando CNPJ...");
-                        boolean cnpjValido = contaPJ.validarCNPJ("01123123000101");
-                        if (cnpjValido) {
-                            System.out.println("CNPJ válido");
-                        } else {
-                            System.out.println("CNPJ inválido");
-                        }
-                    } else {
-                        System.out.println("Por favor, crie uma conta PJ primeiro.");
-                    }
-                    break;
-                case 11:
-                    if (admin != null) {
-                        System.out.println("Gerando relatórios...");
-                        relatorios.gerarRelatorios(admin);
-                        System.out.println("Relatórios gerados com sucesso!");
-                    } else {
-                        System.out.println("Por favor, faça login como administrador primeiro.");
-                    }
-                    break;
-                case 12:
-                    System.out.println("Digite o número do documento do cliente a ser consultado:");
-                    String docNumber = scanner.nextLine();
-                    Datas clienteConsultado = executor.getClienteById(docNumber);
-                    if (clienteConsultado != null) {
-                        System.out.println("Cliente encontrado: " + clienteConsultado.getName());
-                        System.out.println("Email: " + clienteConsultado.getEmail());
-                        System.out.println("Conta: " + clienteConsultado.getAccount());
-                        System.out.println("Saldo: " + clienteConsultado.getBalance());
-                    } else {
-                        System.out.println("Cliente não encontrado.");
-                    }
-                    break;
-                case 0:
+                    continuar = false;
                     System.out.println("Saindo...");
-                    scanner.close();
-                    return;
+                    break;
                 default:
-                    System.out.println("Opção inválida! Tente novamente.");
+                    System.out.println("Opção inválida. Tente novamente.");
+                    break;
+            }
+        }
+
+        scanner.close();
+    }
+
+    private static Cliente login(Scanner scanner) {
+        System.out.print("Email: ");
+        String email = scanner.nextLine();
+        System.out.print("Senha: ");
+        String password = scanner.nextLine();
+
+        Datas dadosCliente = executor.getClienteByEmailAndPassword(email, password);
+        if (dadosCliente != null) {
+            System.out.println("Login bem-sucedido!");
+            if(dadosCliente.getDocument_number().length() == 10){
+                return new Cliente(dadosCliente.getDocument_number(), "", dadosCliente.getName(), dadosCliente.getPassword(), dadosCliente.getEmail(), dadosCliente.getAccount(), dadosCliente.getBalance());
+
+            } else{
+                return new Cliente("", dadosCliente.getDocument_number(), dadosCliente.getName(), dadosCliente.getPassword(), dadosCliente.getEmail(), dadosCliente.getAccount(), dadosCliente.getBalance());
+
+            }
+        } else {
+            System.out.println("Login falhou. Email ou senha incorretos.");
+            return null;
+        }
+    }
+
+    private static Administrador loginAdmin(Scanner scanner) {
+        System.out.print("Email: ");
+        String email = scanner.nextLine();
+        System.out.print("Senha: ");
+        String password = scanner.nextLine();
+
+        Datas dadosAdmin = executor.getAdminByEmailAndPassword(email, password);
+        if (dadosAdmin != null) {
+            System.out.println("Login de Admin bem-sucedido!");
+            return new Administrador(dadosAdmin.getDocument_number(), "", dadosAdmin.getName(), dadosAdmin.getPassword(), dadosAdmin.getEmail(), dadosAdmin.getAccount(), dadosAdmin.getBalance());
+        } else {
+            System.out.println("Login falhou. Email ou senha incorretos.");
+            return null;
+        }
+    }
+
+    private static void menuFinanceiro(Scanner scanner, Cliente usuario) throws SQLException {
+        boolean continuar = true;
+
+        while (continuar) {
+            System.out.println("\n--- Menu Financeiro ---");
+            System.out.println("1. Sacar");
+            System.out.println("2. Depositar");
+            System.out.println("3. Empréstimo e consulta de débito");
+            System.out.println("4. Ver Saldo");
+            System.out.println("5. Sair");
+            System.out.print("Escolha uma opção: ");
+
+            int opcao = scanner.nextInt();
+            scanner.nextLine();
+
+            clearConsole();
+
+            switch (opcao) {
+                case 1:
+                    System.out.print("Quantia para saque: ");
+                    double saque = scanner.nextDouble();
+                    usuario.sacar(saque);
+                    break;
+                case 2:
+                    System.out.print("Quantia para depósito: ");
+                    double deposito = scanner.nextDouble();
+                    usuario.depositar(deposito);
+                    break;
+                case 3:
+                    System.out.print("Quantia para empréstimo(caso deseje apenas ver seu débito digite um valor 0): ");
+                    double emprestimo = scanner.nextDouble();
+                    usuario.emprestimo(emprestimo);
+                    break;
+                case 4:
+                    System.out.println("Saldo: " + usuario.getSaldo());
+                    break;
+                case 5:
+                    continuar = false;
+                    System.out.println("Saindo do menu financeiro...");
+                    break;
+                default:
+                    System.out.println("Opção inválida. Tente novamente.");
+                    break;
             }
         }
     }
+
+    private static void menuAdmin(Scanner scanner, Administrador adm) {
+        Administrador admin = adm;
+        boolean continuar = true;
+
+        while (continuar) {
+            System.out.println("\n--- Menu do Admin ---");
+            System.out.println("1. Listar todos os CPFs");
+            System.out.println("2. Listar todos os CNPJs");
+            System.out.println("3. Excluir uma conta");
+            System.out.println("4. Sair");
+            System.out.print("Escolha uma opção: ");
+
+            int opcao = scanner.nextInt();
+            scanner.nextLine();
+
+            clearConsole();
+
+            switch (opcao) {
+                case 1:
+                    admin.listarCpfs(executor);
+                    break;
+                case 2:
+                    admin.listarCnpjs(executor);
+                    break;
+                case 3:
+                    System.out.print("Digite o CPF ou CNPJ para excluir: ");
+                    String id = scanner.nextLine();
+                    admin.excluirConta(executor, id);
+                    break;
+                case 4:
+                    continuar = false;
+                    System.out.println("Saindo do menu do admin...");
+                    break;
+                default:
+                    System.out.println("Opção inválida. Tente novamente.");
+                    break;
+            }
+        }
+    }
+
+    private static void cadastroPessoaFisica(Scanner scanner) {
+        System.out.print("CPF: ");
+        String cpf = scanner.nextLine();
+        System.out.print("Nome: ");
+        String name = scanner.nextLine();
+        System.out.print("Email: ");
+        String email = scanner.nextLine();
+        System.out.print("Senha: ");
+        String password = scanner.nextLine();
+        System.out.print("Saldo: ");
+        double saldo = scanner.nextDouble();
+        scanner.nextLine();
+
+        Datas novaPessoa = new Datas(cpf, name, email, 1, password, saldo);
+        executor.insertCliente(novaPessoa);
+        System.out.println("Pessoa física cadastrada com sucesso.");
+    }
+
+    private static void cadastroPessoaJuridica(Scanner scanner) {
+        System.out.print("CNPJ: ");
+        String cnpj = scanner.nextLine();
+        System.out.print("Nome: ");
+        String name = scanner.nextLine();
+        System.out.print("Email: ");
+        String email = scanner.nextLine();
+        System.out.print("Senha: ");
+        String password = scanner.nextLine();
+        System.out.print("Saldo: ");
+        double saldo = scanner.nextDouble();
+        scanner.nextLine();
+
+        Datas novaPessoa = new Datas(cnpj, name, email, 2, password, saldo);
+        executor.insertCliente(novaPessoa);
+        System.out.println("Pessoa jurídica cadastrada com sucesso.");
+    }
+
     public static void clearConsole() {
         try {
             final String os = System.getProperty("os.name");
@@ -175,7 +241,6 @@ public class Main {
                 System.out.flush();
             }
         } catch (final Exception e) {
-            // Handle any exceptions.
             e.printStackTrace();
         }
     }

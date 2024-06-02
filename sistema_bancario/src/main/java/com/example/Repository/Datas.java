@@ -17,6 +17,15 @@ public class Datas {
         this.balance = balance;
     }
 
+    public Datas(String cpf, String name2, String email2, int account2, String password2, double saldo) {
+        this.document_number = cpf;
+        this.name = name2;
+        this.email = email2;
+        this.account = account2;
+        this.password = password2;
+        this.balance = (float) saldo;
+    }
+
     public String getDocument_number() {
         return document_number;
     }
