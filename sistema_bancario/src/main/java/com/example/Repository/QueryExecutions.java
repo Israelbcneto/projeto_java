@@ -206,44 +206,67 @@ public class QueryExecutions {
     }
 
     public void updateBalance(double saldo, String document_number, float debt) {
+        Connection conn = null;
+        PreparedStatement stmt_debt = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+    
+        try {
 
-        if (debt == 0.0f) {
-            try {
+            conn = dbManager.getConnection();
+            
+            if (debt != 0.0f) {
+    
+                // Atualiza o saldo e a dívida do cliente
+                String query = "UPDATE clients_datas SET balance = ?, debt = debt + ? WHERE document_number = ?";
+                stmt = conn.prepareStatement(query);
+                stmt.setDouble(1, saldo);  // Use setDouble here
+                stmt.setFloat(2, debt);
+                stmt.setString(3, document_number);
+                stmt.executeUpdate();
+
                 // Busca a dívida atual do cliente
                 String queryDebtView = "SELECT debt FROM clients_datas WHERE document_number = ?";
-                PreparedStatement stmt_debt = dbManager.getConnection().prepareStatement(queryDebtView);
+                stmt_debt = conn.prepareStatement(queryDebtView);
                 stmt_debt.setString(1, document_number);
-                ResultSet rs = stmt_debt.executeQuery();
+                rs = stmt_debt.executeQuery();
                 
                 if (rs.next()) {
                     System.out.println("Dívida atual: " + rs.getFloat("debt"));
                 }
     
-                // Atualiza o saldo e a dívida do cliente
-                String query = "UPDATE clients_datas SET balance = ?, debt = ? WHERE document_number = ?";
-                PreparedStatement stmt = dbManager.getConnection().prepareStatement(query);
-                stmt.setFloat(1, (float) saldo);
-                stmt.setFloat(2, debt);
-                stmt.setString(3, document_number);
-                stmt.executeUpdate();
-    
-            } catch (SQLException e) {
-                System.out.println("Ocorreu um erro ao atualizar o saldo e a dívida: " + e.getMessage());
-            }
-    
-        } else {
-            try {
+            } else {
                 // Atualiza apenas o saldo do cliente
                 String query = "UPDATE clients_datas SET balance = ? WHERE document_number = ?";
-                PreparedStatement stmt = dbManager.getConnection().prepareStatement(query);
-                stmt.setFloat(1, (float) saldo);
-                stmt.setString(2, document_number);
+                stmt = conn.prepareStatement(query);
+                stmt.setDouble(1, saldo);  // Use setDouble here
+                stmt.setString(2, document_number);  // Correct the parameter index
                 stmt.executeUpdate();
+
+                // Busca a dívida atual do cliente
+                String queryDebtView = "SELECT debt FROM clients_datas WHERE document_number = ?";
+                stmt_debt = conn.prepareStatement(queryDebtView);
+                stmt_debt.setString(1, document_number);
+                rs = stmt_debt.executeQuery();
+                
+                if (rs.next()) {
+                    System.out.println("Dívida atual: " + rs.getFloat("debt"));
+                }
+            }
     
+        } catch (SQLException e) {
+            System.out.println("Ocorreu um erro ao atualizar o saldo e a dívida: " + e.getMessage());
+        } finally {
+            // Fechar recursos
+            try {
+                if (rs != null) rs.close();
+                if (stmt_debt != null) stmt_debt.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
             } catch (SQLException e) {
-                System.out.println("Ocorreu um erro ao atualizar o saldo: " + e.getMessage());
+                System.out.println("Ocorreu um erro ao fechar os recursos: " + e.getMessage());
             }
         }
-    }
+    }    
     
 }
