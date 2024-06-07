@@ -3,20 +3,21 @@ package com.example.Repository;
 import java.sql.*;
 import java.util.ArrayList;
 
-public class QueryExecutions {
+public class QueryExecutions implements IQueryExecutions {
 
-    private DatabaseManager dbManager;
+    public DatabaseManager dbManager;
 
     public QueryExecutions() throws SQLException {
         dbManager = new DatabaseManager("jdbc:mysql://localhost/bank_system", "root", "");
     }
 
-    public DatabaseManager manager(){
+    @Override
+    public DatabaseManager manager() {
         return dbManager;
     }
 
+    @Override
     public Datas getClienteByEmailAndPassword(String email, String password) {
-
         try {
             String query = "SELECT * FROM clients_datas WHERE email = ? and password = ?";
             PreparedStatement stmt = dbManager.getConnection().prepareStatement(query);
@@ -38,9 +39,9 @@ public class QueryExecutions {
         }
         return null;
     }
-    
-    public Datas getAdminByEmailAndPassword(String email, String password) {
 
+    @Override
+    public Datas getAdminByEmailAndPassword(String email, String password) {
         try {
             String query = "SELECT * FROM administers WHERE email = ? and password = ?";
             PreparedStatement stmt = dbManager.getConnection().prepareStatement(query);
@@ -63,6 +64,7 @@ public class QueryExecutions {
         return null;
     }
 
+    @Override
     public void insertCliente(Datas cliente) {
         try {
             String query = "INSERT INTO clients_datas (document_number, name, email, account, password, balance) VALUES (?, ?, ?, ?, ?, ?)";
@@ -80,6 +82,7 @@ public class QueryExecutions {
         }
     }
 
+    @Override
     public Datas getClienteById(String documentNumber) {
         try {
             String query = "SELECT * FROM clients_datas WHERE document_number = ?";
@@ -101,6 +104,7 @@ public class QueryExecutions {
         return null;
     }
 
+    @Override
     public void deleteCliente(String documentNumber) {
         try {
             String query = "DELETE FROM clients_datas WHERE document_number = ?";
@@ -113,6 +117,7 @@ public class QueryExecutions {
         }
     }
 
+    @Override
     public void insertAdministrador(Datas admin) {
         try {
             String query = "INSERT INTO administers (document_number, name, email, account, balance, password) VALUES (?, ?, ?, ?, ?, ?)";
@@ -130,6 +135,7 @@ public class QueryExecutions {
         }
     }
 
+    @Override
     public Datas getAdministradorById(String documentNumber) {
         try {
             String query = "SELECT * FROM administers WHERE document_number = ?";
@@ -151,6 +157,7 @@ public class QueryExecutions {
         return null;
     }
 
+    @Override
     public void deleteAdministrador(String documentNumber) {
         try {
             String query = "DELETE FROM administers WHERE document_number = ?";
@@ -163,11 +170,19 @@ public class QueryExecutions {
         }
     }
 
+    @Override
     public ArrayList<Datas> getAllClientes() {
         ArrayList<Datas> clientes = new ArrayList<>();
         try {
             String query = "SELECT * FROM clients_datas";
             ResultSet rs = dbManager.executeQuery(query);
+            
+            // Verificação de null e log de depuração
+            if (rs == null) {
+                System.out.println("ResultSet retornou nulo.");
+                return clientes;
+            }
+            
             while (rs.next()) {
                 Datas cliente = new Datas(
                         rs.getString("document_number"),
@@ -183,7 +198,9 @@ public class QueryExecutions {
         }
         return clientes;
     }
+    
 
+    @Override
     public ArrayList<Datas> getAllAdministradores() {
         ArrayList<Datas> admins = new ArrayList<>();
         try {
@@ -205,6 +222,7 @@ public class QueryExecutions {
         return admins;
     }
 
+    @Override
     public void updateBalance(double saldo, String document_number, float debt) {
         Connection conn = null;
         PreparedStatement stmt_debt = null;
@@ -212,15 +230,13 @@ public class QueryExecutions {
         ResultSet rs = null;
     
         try {
-
             conn = dbManager.getConnection();
             
             if (debt != 0.0f) {
-    
                 // Atualiza o saldo e a dívida do cliente
                 String query = "UPDATE clients_datas SET balance = ?, debt = debt + ? WHERE document_number = ?";
                 stmt = conn.prepareStatement(query);
-                stmt.setDouble(1, saldo);  // Use setDouble here
+                stmt.setDouble(1, saldo);
                 stmt.setFloat(2, debt);
                 stmt.setString(3, document_number);
                 stmt.executeUpdate();
@@ -239,8 +255,8 @@ public class QueryExecutions {
                 // Atualiza apenas o saldo do cliente
                 String query = "UPDATE clients_datas SET balance = ? WHERE document_number = ?";
                 stmt = conn.prepareStatement(query);
-                stmt.setDouble(1, saldo);  // Use setDouble here
-                stmt.setString(2, document_number);  // Correct the parameter index
+                stmt.setDouble(1, saldo);
+                stmt.setString(2, document_number);
                 stmt.executeUpdate();
 
                 // Busca a dívida atual do cliente
@@ -257,7 +273,6 @@ public class QueryExecutions {
         } catch (SQLException e) {
             System.out.println("Ocorreu um erro ao atualizar o saldo e a dívida: " + e.getMessage());
         } finally {
-            // Fechar recursos
             try {
                 if (rs != null) rs.close();
                 if (stmt_debt != null) stmt_debt.close();
@@ -268,5 +283,5 @@ public class QueryExecutions {
             }
         }
     }    
-    
+
 }

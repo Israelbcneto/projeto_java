@@ -66,12 +66,4 @@ public class Usuario {
         this.tipoDeConta = tipoDeConta;
     }
 
-    public void entrar() {
-        // Método para entrar (Usaremos API (Banco de dados))
-    }
-
-    // Método para cadastrar usuário (Usaremos API (Banco de dados))
-    public void cadastrar() {
-        // Lógica para cadastrar usuário (Usaremos API (Banco de dados))
-    }
 }

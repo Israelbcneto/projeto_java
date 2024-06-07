@@ -11,7 +11,6 @@ import java.util.Scanner;
 
 public class Main {
     private static QueryExecutions executor;
-
     public static void main(String[] args) throws IOException, SQLException {
         Scanner scanner = new Scanner(System.in);
         boolean continuar = true;
@@ -244,4 +243,5 @@ public class Main {
             e.printStackTrace();
         }
     }
+
 }
